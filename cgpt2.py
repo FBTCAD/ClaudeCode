@@ -60,6 +60,59 @@ except ImportError:
     pass
 
 # ====================
+# GPU Configuration for RTX 4090
+# ====================
+
+def setup_gpu():
+    """Configure GPU for optimal performance on RTX 4090"""
+    gpus = tf.config.list_physical_devices('GPU')
+
+    if gpus:
+        try:
+            # Enable memory growth to prevent TensorFlow from allocating all GPU memory
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+
+            print(f"\n{'='*70}")
+            print("GPU CONFIGURATION")
+            print(f"{'='*70}")
+            print(f"✓ Found {len(gpus)} GPU(s)")
+            for i, gpu in enumerate(gpus):
+                print(f"  GPU {i}: {gpu.name}")
+
+            # Enable mixed precision for RTX 4090 (uses Tensor Cores for faster training)
+            # This can provide 2-3x speedup on RTX 4090
+            try:
+                from tensorflow.keras import mixed_precision
+                policy = mixed_precision.Policy('mixed_float16')
+                mixed_precision.set_global_policy(policy)
+                print(f"✓ Mixed precision enabled (float16) - optimized for RTX 4090 Tensor Cores")
+                print(f"  Expected additional speedup: 2-3x on top of GPU acceleration")
+            except Exception as e:
+                print(f"⚠ Mixed precision not enabled: {e}")
+
+            # Enable XLA compilation for additional performance
+            # tf.config.optimizer.set_jit(True)
+            # print(f"✓ XLA JIT compilation enabled")
+
+            print(f"{'='*70}\n")
+            return True
+
+        except RuntimeError as e:
+            print(f"⚠ GPU configuration error: {e}")
+            return False
+    else:
+        print("\n⚠ No GPU detected - training will use CPU (much slower)")
+        print("  For RTX 4090 support, ensure:")
+        print("  1. NVIDIA drivers are installed")
+        print("  2. CUDA Toolkit is installed")
+        print("  3. TensorFlow with GPU support: pip install tensorflow[and-cuda]\n")
+        return False
+
+# Setup GPU before any model operations
+GPU_AVAILABLE = setup_gpu()
+
+# ====================
 # Configuration
 # ====================
 

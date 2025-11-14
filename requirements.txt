@@ -1,1 +1,16 @@
-torch>=2.0.0
+# Core dependencies
+torch>=2.6.0
+transformers>=4.46.3
+tokenizers>=0.20.3
+
+# Image and PDF processing
+Pillow>=10.0.0
+pdf2image>=1.16.0
+
+# Model utilities
+einops>=0.7.0
+addict>=2.4.0
+easydict>=1.10
+
+# Optional: GPU acceleration (requires CUDA)
+# flash-attn>=2.7.3
